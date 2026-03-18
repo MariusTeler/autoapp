@@ -79,7 +79,8 @@
 
 /* ── Print styles ── */
 @media print {
-  @page { size: A4 portrait; margin: 10mm; }
+  @page { size: A4 portrait; margin: 0; }
+  body { padding: 10mm; }
 
   /* Hide UI chrome */
   .no-print, .navbar, .btn, .alert, .page-header { display: none !important; }
