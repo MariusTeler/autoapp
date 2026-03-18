@@ -100,8 +100,6 @@
 <!-- Totaluri -->
 <div class="avoid-break mb-3">
   <table class="table table-bordered table-sm w-auto ms-auto">
-    <tr><td>Total Materiale (fără TVA)</td><td class="text-end">{{ aviz.total_materiale | format_ron }} Lei</td></tr>
-    <tr><td>Total Manoperă (fără TVA)</td><td class="text-end">{{ aviz.total_servicii | format_ron }} Lei</td></tr>
     <tr><td>Total General (fără TVA)</td><td class="text-end">{{ aviz.total_general | format_ron }} Lei</td></tr>
     <tr><td>TVA {{ aviz.tva_snapshot }}%</td><td class="text-end">{{ aviz.tva_valoare | format_ron }} Lei</td></tr>
     <tr class="table-dark"><td><strong>TOTAL DE PLATĂ</strong></td>

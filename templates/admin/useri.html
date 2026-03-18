@@ -49,47 +49,49 @@
           </form>
         </td>
       </tr>
-
-      <div class="modal fade" id="modalEdit{{ user.id }}" tabindex="-1">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <form method="post" action="{{ url_for('admin.useri_editeaza', user_id=user.id) }}"
-                  class="form-compact">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <div class="modal-header py-2">
-                <h6 class="modal-title">Editează: <strong>{{ user.username }}</strong></h6>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-              </div>
-              <div class="modal-body">
-                <div class="mb-2">
-                  <label class="form-label">Nume Complet</label>
-                  <input type="text" class="form-control form-control-sm" name="full_name"
-                         value="{{ user.full_name }}" required>
-                </div>
-                <div class="mb-2">
-                  <label class="form-label">Rol</label>
-                  <select class="form-select form-select-sm" name="role">
-                    <option value="user" {% if user.role == 'user' %}selected{% endif %}>user</option>
-                    <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>admin</option>
-                  </select>
-                </div>
-                <div class="mb-2">
-                  <label class="form-label">Parolă nouă <span class="text-muted">(lasă gol pentru a nu schimba)</span></label>
-                  <input type="password" class="form-control form-control-sm" name="password">
-                </div>
-              </div>
-              <div class="modal-footer py-2">
-                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Anulează</button>
-                <button type="submit" class="btn btn-sm btn-primary">Salvează</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
       {% endfor %}
     </tbody>
   </table>
 </div>
+
+{% for user in users %}
+<div class="modal fade" id="modalEdit{{ user.id }}" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="{{ url_for('admin.useri_editeaza', user_id=user.id) }}"
+            class="form-compact">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="modal-header py-2">
+          <h6 class="modal-title">Editează: <strong>{{ user.username }}</strong></h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-2">
+            <label class="form-label">Nume Complet</label>
+            <input type="text" class="form-control form-control-sm" name="full_name"
+                   value="{{ user.full_name }}" required>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Rol</label>
+            <select class="form-select form-select-sm" name="role">
+              <option value="user" {% if user.role == 'user' %}selected{% endif %}>user</option>
+              <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>admin</option>
+            </select>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Parolă nouă <span class="text-muted">(lasă gol pentru a nu schimba)</span></label>
+            <input type="password" class="form-control form-control-sm" name="password">
+          </div>
+        </div>
+        <div class="modal-footer py-2">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Anulează</button>
+          <button type="submit" class="btn btn-sm btn-primary">Salvează</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endfor %}
 
 <div class="modal fade" id="modalNouUser" tabindex="-1">
   <div class="modal-dialog">
