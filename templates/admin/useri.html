@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block title %}Admin Useri — Auto Service{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Administrare Utilizatori</h2>
+  <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalNouUser">
+    + User nou
+  </button>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-bordered table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>Utilizator</th>
+        <th>Nume Complet</th>
+        <th>Rol</th>
+        <th>Status</th>
+        <th>Creat la</th>
+        <th>Acțiuni</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr>
+        <td>{{ user.username }}</td>
+        <td>{{ user.full_name }}</td>
+        <td>
+          <span class="badge {% if user.role == 'admin' %}bg-danger{% else %}bg-secondary{% endif %}">
+            {{ user.role }}
+          </span>
+        </td>
+        <td>
+          <span class="badge {% if user.active %}bg-success{% else %}bg-warning text-dark{% endif %}">
+            {% if user.active %}Activ{% else %}Inactiv{% endif %}
+          </span>
+        </td>
+        <td>{{ user.created_at.strftime('%d.%m.%Y') }}</td>
+        <td>
+          <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                  data-bs-target="#modalEdit{{ user.id }}">Editează</button>
+          <form method="post" action="{{ url_for('admin.useri_toggle', user_id=user.id) }}"
+                class="d-inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-sm
+              {% if user.active %}btn-outline-warning{% else %}btn-outline-success{% endif %}">
+              {% if user.active %}Dezactivează{% else %}Activează{% endif %}
+            </button>
+          </form>
+        </td>
+      </tr>
+
+      <!-- Modal Edit User -->
+      <div class="modal fade" id="modalEdit{{ user.id }}" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form method="post" action="{{ url_for('admin.useri_editeaza', user_id=user.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <div class="modal-header">
+                <h5 class="modal-title">Editează: {{ user.username }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label class="form-label">Nume Complet</label>
+                  <input type="text" class="form-control" name="full_name"
+                         value="{{ user.full_name }}" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Rol</label>
+                  <select class="form-select" name="role">
+                    <option value="user" {% if user.role == 'user' %}selected{% endif %}>user</option>
+                    <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>admin</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Parolă nouă (lasă gol pentru a nu schimba)</label>
+                  <input type="password" class="form-control" name="password">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anulează</button>
+                <button type="submit" class="btn btn-primary">Salvează</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal Nou User -->
+<div class="modal fade" id="modalNouUser" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="{{ url_for('admin.useri_nou') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="modal-header">
+          <h5 class="modal-title">User Nou</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Utilizator *</label>
+            <input type="text" class="form-control" name="username" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Nume Complet *</label>
+            <input type="text" class="form-control" name="full_name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Parolă *</label>
+            <input type="password" class="form-control" name="password" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Rol</label>
+            <select class="form-select" name="role">
+              <option value="user">user</option>
+              <option value="admin">admin</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anulează</button>
+          <button type="submit" class="btn btn-success">Crează User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
