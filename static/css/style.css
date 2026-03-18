@@ -38,8 +38,23 @@
 .form-compact .form-label {
   font-size: 0.74rem;
   margin-bottom: 2px;
-  color: #495057;
-  font-weight: 500;
+  color: #000;
+  font-weight: 700;
+}
+
+/* Pronounced input borders */
+.form-compact .form-control,
+.form-compact .form-select {
+  border: 1.5px solid #868e96;
+  background-color: #fff;
+}
+.form-compact .form-control:focus,
+.form-compact .form-select:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.2);
+}
+.form-compact textarea.form-control {
+  border: 1.5px solid #868e96;
 }
 
 /* Compact table (for materiale/servicii in form) */
