@@ -1,4 +1,4 @@
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -15,9 +15,13 @@ class User(UserMixin, db.Model):
     full_name = db.Column(db.String(200), nullable=False)
     role = db.Column(db.String(20), nullable=False, default='user')  # 'admin' or 'user'
     active = db.Column(db.Boolean, nullable=False, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     avize = db.relationship('Aviz', backref='user', lazy=True)
+
+    __table_args__ = (
+        db.CheckConstraint("role IN ('admin', 'user')", name='ck_user_role'),
+    )
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -44,7 +48,7 @@ class Aviz(db.Model):
     __tablename__ = 'avize'
 
     id = db.Column(db.Integer, primary_key=True)
-    numar_complet = db.Column(db.String(50), nullable=False)
+    numar_complet = db.Column(db.String(50), nullable=False, unique=True)
     numar_secvential = db.Column(db.Integer, nullable=False)
     an_aviz = db.Column(db.Integer, nullable=False)
     data_aviz = db.Column(db.Date, nullable=False, default=date.today)
@@ -74,7 +78,7 @@ class Aviz(db.Model):
     tva_snapshot = db.Column(db.Float, nullable=False, default=19.0)
 
     # Meta
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     deleted_at = db.Column(db.DateTime, nullable=True)
 
     # Unique constraint to prevent duplicate sequential numbers per year
@@ -154,11 +158,10 @@ def get_setting(key, default=None):
 
 
 def set_setting(key, value):
-    """Insert or update a settings key."""
+    """Insert or update a settings key. Caller is responsible for db.session.commit()."""
     s = Setting.query.filter_by(key=key).first()
     if s:
         s.value = value
     else:
         s = Setting(key=key, value=value)
         db.session.add(s)
-    db.session.commit()
