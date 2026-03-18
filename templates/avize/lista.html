@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}Avize — Auto Service{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Avize</h2>
+  <a href="{{ url_for('avize.nou') }}" class="btn btn-success">+ Aviz Nou</a>
+</div>
+
+<!-- Filters -->
+<form method="get" class="row g-2 mb-3">
+  <div class="col-md-2">
+    <input type="text" class="form-control" name="nr" placeholder="Nr. Aviz" value="{{ nr }}">
+  </div>
+  <div class="col-md-2">
+    <input type="date" class="form-control" name="data_de_la" value="{{ data_de_la }}" title="De la">
+  </div>
+  <div class="col-md-2">
+    <input type="date" class="form-control" name="data_pana_la" value="{{ data_pana_la }}" title="Până la">
+  </div>
+  <div class="col-md-3">
+    <input type="text" class="form-control" name="beneficiar" placeholder="Beneficiar" value="{{ beneficiar }}">
+  </div>
+  <div class="col-md-2">
+    <input type="text" class="form-control" name="auto_nr" placeholder="Nr. Auto" value="{{ auto_nr }}">
+  </div>
+  <div class="col-md-1">
+    <button type="submit" class="btn btn-primary w-100">Filtrează</button>
+  </div>
+</form>
+
+<div class="table-responsive">
+  <table class="table table-bordered table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>Nr. Aviz</th>
+        <th>Dată</th>
+        <th>Beneficiar</th>
+        <th>Nr. Auto</th>
+        <th>Marcă / Model</th>
+        <th>Total (cu TVA)</th>
+        {% if current_user.role == 'admin' %}<th>User</th>{% endif %}
+        <th>Acțiuni</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for aviz in avize %}
+      <tr>
+        <td>{{ aviz.numar_complet }}</td>
+        <td>{{ aviz.data_aviz.strftime('%d.%m.%Y') }}</td>
+        <td>{{ aviz.beneficiar_nume or '—' }}</td>
+        <td>{{ aviz.auto_nr }}</td>
+        <td>{{ aviz.auto_marca }} {{ aviz.auto_model }}</td>
+        <td>{{ aviz.total_de_plata | format_ron }} Lei</td>
+        {% if current_user.role == 'admin' %}<td>{{ aviz.user.full_name }}</td>{% endif %}
+        <td>
+          <a href="{{ url_for('avize.detaliu', aviz_id=aviz.id) }}" class="btn btn-sm btn-outline-primary">👁</a>
+          <a href="{{ url_for('avize.editeaza', aviz_id=aviz.id) }}" class="btn btn-sm btn-outline-secondary">✏️</a>
+          <a href="{{ url_for('avize.print_aviz', aviz_id=aviz.id) }}" class="btn btn-sm btn-outline-info" target="_blank">🖨️</a>
+          <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                  data-bs-target="#modalSterge{{ aviz.id }}">🗑️</button>
+        </td>
+      </tr>
+      <!-- Modal Ștergere -->
+      <div class="modal fade" id="modalSterge{{ aviz.id }}" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+          <div class="modal-content">
+            <div class="modal-header"><h6 class="modal-title">Confirmare ștergere</h6></div>
+            <div class="modal-body">Ștergi avizul <strong>{{ aviz.numar_complet }}</strong>?</div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Anulează</button>
+              <form method="post" action="{{ url_for('avize.sterge', aviz_id=aviz.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-danger btn-sm">Șterge</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      {% if not avize %}
+      <tr><td colspan="8" class="text-center text-muted">Niciun aviz găsit.</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

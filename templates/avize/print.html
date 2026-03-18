@@ -1,0 +1,11 @@
+{% extends 'base_print.html' %}
+{% block title %}{{ aviz.numar_complet }} — Print{% endblock %}
+
+{% block content %}
+<div class="no-print text-center mb-3">
+  <button onclick="window.print()" class="btn btn-primary">Printează Aviz</button>
+  <a href="{{ url_for('avize.detaliu', aviz_id=aviz.id) }}" class="btn btn-secondary">Înapoi</a>
+</div>
+
+{% include 'avize/_detaliu_continut.html' %}
+{% endblock %}

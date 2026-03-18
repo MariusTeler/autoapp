@@ -1,0 +1,134 @@
+<!-- Firm header -->
+<div class="print-header">
+  <strong style="font-size:14pt">{{ settings.firma_denumire }}</strong><br>
+  {{ settings.firma_adresa }}, {{ settings.firma_localitate }}, jud. {{ settings.firma_judet }}<br>
+  CUI: {{ settings.firma_cui }} | Tel: {{ settings.firma_telefon }}
+</div>
+
+<div class="print-title">
+  Deviz Final / Comanda Service Nr. {{ aviz.numar_complet }}<br>
+  din {{ aviz.data_aviz.strftime('%d.%m.%Y') }}
+</div>
+
+<!-- Beneficiar + Auto -->
+<div class="row mb-3 avoid-break">
+  <div class="col-md-6">
+    <table class="table table-bordered table-sm">
+      <thead class="table-secondary"><tr><th colspan="2">Date Beneficiar</th></tr></thead>
+      <tbody>
+        <tr><td>Beneficiar</td><td>{{ aviz.beneficiar_nume or '—' }}</td></tr>
+        <tr><td>CIF</td><td>{{ aviz.beneficiar_cif or '—' }}</td></tr>
+        <tr><td>Telefon</td><td>{{ aviz.beneficiar_telefon or '—' }}</td></tr>
+        <tr><td>Email</td><td>{{ aviz.beneficiar_email or '—' }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-md-6">
+    <table class="table table-bordered table-sm">
+      <thead class="table-secondary"><tr><th colspan="2">Date Autovehicul</th></tr></thead>
+      <tbody>
+        <tr><td>Nr. Auto</td><td><strong>{{ aviz.auto_nr }}</strong></td></tr>
+        <tr><td>Marcă / Model</td><td>{{ aviz.auto_marca }} {{ aviz.auto_model }}</td></tr>
+        <tr><td>Serie Șasiu</td><td>{{ aviz.auto_serie_sasiu or '—' }}</td></tr>
+        <tr><td>Serie Motor</td><td>{{ aviz.auto_serie_motor or '—' }}</td></tr>
+        <tr><td>An Fabricație</td><td>{{ aviz.auto_an_fabricatie or '—' }}</td></tr>
+        <tr><td>Motorizare</td><td>{{ aviz.auto_motorizare or '—' }}</td></tr>
+        <tr><td>Km</td><td>{{ aviz.auto_km or '—' }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if aviz.defect_reclamat %}
+<div class="mb-3 avoid-break">
+  <p><strong>Defect reclamat de client:</strong></p>
+  <p>{{ aviz.defect_reclamat }}</p>
+</div>
+{% endif %}
+
+{% if aviz.defecte_constatate %}
+<div class="mb-3 avoid-break">
+  <p><strong>Defecte constatate în timpul reparației:</strong></p>
+  <p>{{ aviz.defecte_constatate }}</p>
+</div>
+{% endif %}
+
+<!-- Materiale -->
+<div class="avoid-break mb-3">
+  <table class="table table-bordered table-sm">
+    <thead class="table-secondary">
+      <tr><th>#</th><th>Denumire Piesă/Material</th><th>U/M</th><th>Cant.</th><th>Preț/buc</th><th>Valoare</th></tr>
+    </thead>
+    <tbody>
+      {% for m in aviz.materiale %}
+      <tr>
+        <td>{{ m.position }}</td><td>{{ m.denumire }}</td><td>{{ m.um }}</td>
+        <td>{{ m.cantitate | format_ron }}</td><td>{{ m.pret_unitar | format_ron }} Lei</td>
+        <td>{{ m.valoare | format_ron }} Lei</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr><td colspan="5" class="text-end fw-bold">Total Materiale:</td>
+          <td class="fw-bold">{{ aviz.total_materiale | format_ron }} Lei</td></tr>
+    </tfoot>
+  </table>
+</div>
+
+<!-- Servicii -->
+<div class="avoid-break mb-3">
+  <table class="table table-bordered table-sm">
+    <thead class="table-secondary">
+      <tr><th>#</th><th>Denumire Serviciu</th><th>U/M</th><th>Cant.</th><th>Preț</th><th>Valoare</th></tr>
+    </thead>
+    <tbody>
+      {% for s in aviz.servicii %}
+      <tr>
+        <td>{{ s.position }}</td><td>{{ s.denumire }}</td><td>{{ s.um }}</td>
+        <td>{{ s.cantitate | format_ron }}</td><td>{{ s.pret_unitar | format_ron }} Lei</td>
+        <td>{{ s.valoare | format_ron }} Lei</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr><td colspan="5" class="text-end fw-bold">Total Manoperă:</td>
+          <td class="fw-bold">{{ aviz.total_servicii | format_ron }} Lei</td></tr>
+    </tfoot>
+  </table>
+</div>
+
+<!-- Totaluri -->
+<div class="avoid-break mb-3">
+  <table class="table table-bordered table-sm w-auto ms-auto">
+    <tr><td>Total Materiale (fără TVA)</td><td class="text-end">{{ aviz.total_materiale | format_ron }} Lei</td></tr>
+    <tr><td>Total Manoperă (fără TVA)</td><td class="text-end">{{ aviz.total_servicii | format_ron }} Lei</td></tr>
+    <tr><td>Total General (fără TVA)</td><td class="text-end">{{ aviz.total_general | format_ron }} Lei</td></tr>
+    <tr><td>TVA {{ aviz.tva_snapshot }}%</td><td class="text-end">{{ aviz.tva_valoare | format_ron }} Lei</td></tr>
+    <tr class="table-dark"><td><strong>TOTAL DE PLATĂ</strong></td>
+        <td class="text-end"><strong>{{ aviz.total_de_plata | format_ron }} Lei</strong></td></tr>
+  </table>
+</div>
+
+<!-- Semnături -->
+<div class="row mt-4 avoid-break">
+  <div class="col-6 text-center">
+    <p><strong>Beneficiar</strong></p>
+    <p>{{ aviz.beneficiar_nume or '' }}</p>
+    <div class="signature-line"></div>
+    <small>Semnătură</small>
+  </div>
+  <div class="col-6 text-center">
+    <p><strong>Executant</strong></p>
+    <p>{{ aviz.user.full_name }}</p>
+    <div class="signature-line"></div>
+    <small>Semnătură</small>
+  </div>
+</div>
+
+<!-- Footer -->
+{% if settings.footer_titlu or settings.footer_text %}
+<div class="mt-4 pt-3 border-top avoid-break">
+  {% if settings.footer_titlu %}<p><strong>{{ settings.footer_titlu }}</strong></p>{% endif %}
+  {% if settings.footer_text %}<p>{{ settings.footer_text }}</p>{% endif %}
+</div>
+{% endif %}

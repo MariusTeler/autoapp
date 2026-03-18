@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Aviz {{ aviz.numar_complet }} — Auto Service{% endblock %}
+
+{% block content %}
+<div class="no-print d-flex gap-2 mb-3">
+  <a href="{{ url_for('avize.editeaza', aviz_id=aviz.id) }}" class="btn btn-secondary">✏️ Editează</a>
+  <a href="{{ url_for('avize.print_aviz', aviz_id=aviz.id) }}" class="btn btn-info" target="_blank">🖨️ Printează</a>
+  <a href="{{ url_for('avize.lista') }}" class="btn btn-outline-secondary">← Înapoi</a>
+</div>
+{% include 'avize/_detaliu_continut.html' %}
+{% endblock %}
