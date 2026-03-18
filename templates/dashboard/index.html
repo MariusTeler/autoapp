@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — Auto Service{% endblock %}
+
+{% block content %}
+<h2 class="mb-3">Dashboard</h2>
+
+<!-- Month/year filter -->
+<div class="row mb-3 align-items-end">
+  <div class="col-auto">
+    <label class="form-label">Lună</label>
+    <select name="luna" class="form-select"
+            hx-get="{{ url_for('dashboard.stats') }}"
+            hx-trigger="change"
+            hx-target="#stats-cards"
+            hx-include="[name='luna'],[name='an']">
+      {% for i, l in enumerate(luni, 1) %}
+      <option value="{{ i }}" {% if i == luna %}selected{% endif %}>{{ l }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-auto">
+    <label class="form-label">An</label>
+    <select name="an" class="form-select"
+            hx-get="{{ url_for('dashboard.stats') }}"
+            hx-trigger="change"
+            hx-target="#stats-cards"
+            hx-include="[name='luna'],[name='an']">
+      {% for a in ani %}
+      <option value="{{ a }}" {% if a == an %}selected{% endif %}>{{ a }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</div>
+
+<!-- Stats cards -->
+<div class="row" id="stats-cards">
+  {% include 'dashboard/_stats.html' %}
+</div>
+
+<!-- Recent avize -->
+<h5 class="mt-4">Avize Recente</h5>
+<div class="table-responsive">
+  <table class="table table-bordered table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>Nr. Aviz</th>
+        <th>Dată</th>
+        <th>Beneficiar</th>
+        <th>Nr. Auto</th>
+        <th>Total (cu TVA)</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for aviz in avize_recente %}
+      <tr>
+        <td>{{ aviz.numar_complet }}</td>
+        <td>{{ aviz.data_aviz.strftime('%d.%m.%Y') }}</td>
+        <td>{{ aviz.beneficiar_nume or '—' }}</td>
+        <td>{{ aviz.auto_nr }}</td>
+        <td>{{ aviz.total_de_plata | format_ron }} Lei</td>
+        <td>
+          <a href="{{ url_for('avize.detaliu', aviz_id=aviz.id) }}"
+             class="btn btn-sm btn-outline-primary">Vizualizare</a>
+        </td>
+      </tr>
+      {% endfor %}
+      {% if not avize_recente %}
+      <tr><td colspan="6" class="text-center text-muted">Niciun aviz.</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+
+{% if current_user.role == 'admin' %}
+<h5 class="mt-4">Statistici per Utilizator</h5>
+<div class="table-responsive">
+  <table class="table table-bordered">
+    <thead class="table-dark">
+      <tr>
+        <th>Utilizator</th>
+        <th>Nr. Avize</th>
+        <th>Total Manoperă</th>
+        <th>Total Materiale</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in per_user %}
+      <tr>
+        <td>{{ row.user.full_name }}</td>
+        <td>{{ row.nr_avize }}</td>
+        <td>{{ row.total_servicii | format_ron }} Lei</td>
+        <td>{{ row.total_materiale | format_ron }} Lei</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+{% endblock %}

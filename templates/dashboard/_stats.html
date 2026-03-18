@@ -1,0 +1,32 @@
+<div class="col-md-3">
+  <div class="card text-white bg-primary mb-3">
+    <div class="card-body">
+      <h6 class="card-title">Nr. Avize</h6>
+      <h3 class="card-text">{{ stats.nr_avize }}</h3>
+    </div>
+  </div>
+</div>
+<div class="col-md-3">
+  <div class="card text-white bg-success mb-3">
+    <div class="card-body">
+      <h6 class="card-title">Total Manoperă</h6>
+      <h3 class="card-text">{{ stats.total_servicii | format_ron }} Lei</h3>
+    </div>
+  </div>
+</div>
+<div class="col-md-3">
+  <div class="card text-white bg-info mb-3">
+    <div class="card-body">
+      <h6 class="card-title">Total Materiale</h6>
+      <h3 class="card-text">{{ stats.total_materiale | format_ron }} Lei</h3>
+    </div>
+  </div>
+</div>
+<div class="col-md-3">
+  <div class="card text-white bg-warning mb-3">
+    <div class="card-body">
+      <h6 class="card-title">Total General</h6>
+      <h3 class="card-text">{{ stats.total_general | format_ron }} Lei</h3>
+    </div>
+  </div>
+</div>
