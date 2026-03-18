@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, flash, request
+from flask import abort, render_template, redirect, url_for, flash, request
 from flask_login import login_required
 
 from blueprints.admin import admin_bp
@@ -43,7 +43,7 @@ def useri_nou():
 @login_required
 @admin_required
 def useri_editeaza(user_id):
-    user = User.query.get_or_404(user_id)
+    user = db.get_or_404(User, user_id)
     user.full_name = request.form.get('full_name', user.full_name).strip()
     user.role = request.form.get('role', user.role)
 
@@ -60,7 +60,7 @@ def useri_editeaza(user_id):
 @login_required
 @admin_required
 def useri_toggle(user_id):
-    user = User.query.get_or_404(user_id)
+    user = db.get_or_404(User, user_id)
     user.active = not user.active
     db.session.commit()
     status = 'activat' if user.active else 'dezactivat'

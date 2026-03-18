@@ -32,22 +32,22 @@
         <div class="col-md-6">
           <label class="form-label">Beneficiar</label>
           <input type="text" class="form-control" name="beneficiar_nume" id="beneficiar_nume"
-                 value="{{ aviz.beneficiar_nume if aviz else '' }}">
+                 value="{{ aviz.beneficiar_nume or '' if aviz else '' }}">
         </div>
         <div class="col-md-3">
           <label class="form-label">CIF</label>
           <input type="text" class="form-control" name="beneficiar_cif"
-                 value="{{ aviz.beneficiar_cif if aviz else '' }}">
+                 value="{{ aviz.beneficiar_cif or '' if aviz else '' }}">
         </div>
         <div class="col-md-3">
           <label class="form-label">Telefon</label>
           <input type="text" class="form-control" name="beneficiar_telefon"
-                 value="{{ aviz.beneficiar_telefon if aviz else '' }}">
+                 value="{{ aviz.beneficiar_telefon or '' if aviz else '' }}">
         </div>
         <div class="col-md-4">
           <label class="form-label">Email</label>
           <input type="email" class="form-control" name="beneficiar_email"
-                 value="{{ aviz.beneficiar_email if aviz else '' }}">
+                 value="{{ aviz.beneficiar_email or '' if aviz else '' }}">
         </div>
       </div>
     </div>
@@ -76,27 +76,27 @@
         <div class="col-md-2">
           <label class="form-label">An Fabricație</label>
           <input type="number" class="form-control" name="auto_an_fabricatie" min="1900" max="2099"
-                 value="{{ aviz.auto_an_fabricatie if aviz else '' }}">
+                 value="{{ aviz.auto_an_fabricatie or '' if aviz else '' }}">
         </div>
         <div class="col-md-2">
           <label class="form-label">Km</label>
           <input type="number" class="form-control" name="auto_km" min="0"
-                 value="{{ aviz.auto_km if aviz else '' }}">
+                 value="{{ aviz.auto_km or '' if aviz else '' }}">
         </div>
         <div class="col-md-3">
           <label class="form-label">Serie Șasiu</label>
           <input type="text" class="form-control" name="auto_serie_sasiu"
-                 value="{{ aviz.auto_serie_sasiu if aviz else '' }}">
+                 value="{{ aviz.auto_serie_sasiu or '' if aviz else '' }}">
         </div>
         <div class="col-md-3">
           <label class="form-label">Serie Motor</label>
           <input type="text" class="form-control" name="auto_serie_motor"
-                 value="{{ aviz.auto_serie_motor if aviz else '' }}">
+                 value="{{ aviz.auto_serie_motor or '' if aviz else '' }}">
         </div>
         <div class="col-md-3">
           <label class="form-label">Motorizare</label>
           <input type="text" class="form-control" name="auto_motorizare"
-                 value="{{ aviz.auto_motorizare if aviz else '' }}">
+                 value="{{ aviz.auto_motorizare or '' if aviz else '' }}">
         </div>
       </div>
     </div>
@@ -109,12 +109,12 @@
       <div class="mb-2">
         <label class="form-label">Defect reclamat de client</label>
         <textarea class="form-control" name="defect_reclamat" rows="3"
-                  placeholder="Descrieți defectul reclamat de client...">{{ aviz.defect_reclamat if aviz else '' }}</textarea>
+                  placeholder="Descrieți defectul reclamat de client...">{{ aviz.defect_reclamat or '' if aviz else '' }}</textarea>
       </div>
       <div>
         <label class="form-label">Defecte constatate în timpul reparației</label>
         <textarea class="form-control" name="defecte_constatate" rows="3"
-                  placeholder="Descrieți defectele constatate...">{{ aviz.defecte_constatate if aviz else '' }}</textarea>
+                  placeholder="Descrieți defectele constatate...">{{ aviz.defecte_constatate or '' if aviz else '' }}</textarea>
       </div>
     </div>
   </div>
@@ -285,7 +285,7 @@
   <div class="row mb-4">
     <div class="col-6 text-center">
       <p><strong>Beneficiar</strong></p>
-      <p id="beneficiar-display">{{ aviz.beneficiar_nume if aviz else '' }}</p>
+      <p id="beneficiar-display">{{ aviz.beneficiar_nume or '' if aviz else '' }}</p>
       <div class="signature-line"></div>
       <small class="text-muted">Semnătură</small>
     </div>

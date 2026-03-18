@@ -1,4 +1,4 @@
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 from flask import render_template, redirect, url_for, flash, request, abort
 from flask_login import login_required, current_user
 from sqlalchemy.exc import IntegrityError
@@ -237,7 +237,7 @@ def editeaza(aviz_id):
 def sterge(aviz_id):
     aviz = Aviz.query.filter_by(id=aviz_id, deleted_at=None).first_or_404()
     _check_ownership(aviz)
-    aviz.deleted_at = datetime.utcnow()
+    aviz.deleted_at = datetime.now(timezone.utc)
     db.session.commit()
     flash(f'Avizul {aviz.numar_complet} a fost șters.', 'success')
     return redirect(url_for('avize.lista'))
