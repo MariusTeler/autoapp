@@ -6,29 +6,31 @@ from flask_migrate import Migrate
 from config import Config
 from models import db, User
 
-csrf = CSRFProtect()
-login_manager = LoginManager()
-migrate = Migrate()
-
 
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
-    # Extensions
+    # Extensions — instantiated inside factory for test isolation
+    login_manager = LoginManager()
+    csrf = CSRFProtect()
+    migrate = Migrate()
+
     db.init_app(app)
     csrf.init_app(app)
     migrate.init_app(app, db)
 
-    login_manager.init_app(app)
+    # Configure login_manager BEFORE init_app (correct order per Flask-Login docs)
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Te rugăm să te autentifici pentru a accesa această pagină.'
     login_manager.login_message_category = 'warning'
+    login_manager.init_app(app)
 
     # User loader
     @login_manager.user_loader
     def load_user(user_id):
-        return db.session.get(User, int(user_id))
+        user = db.session.get(User, int(user_id))
+        return user if (user and user.active) else None
 
     # Jinja2 filter: Romanian number format "1.234,56"
     def format_ron(value):
@@ -54,9 +56,10 @@ def create_app(config_class=Config):
     app.register_blueprint(configurare_bp)
 
     # Seed default admin user on first run
+    from sqlalchemy.exc import OperationalError, ProgrammingError
     with app.app_context():
         try:
-            if User.query.count() == 0:
+            if db.session.scalar(db.select(db.func.count(User.id))) == 0:
                 admin = User(
                     username='admin',
                     full_name='Administrator',
@@ -66,7 +69,8 @@ def create_app(config_class=Config):
                 admin.set_password('admin123')
                 db.session.add(admin)
                 db.session.commit()
-        except Exception:
-            pass  # Tables may not exist yet (before first migration)
+        except (OperationalError, ProgrammingError):
+            db.session.rollback()
+            pass  # Tables not yet created — run flask db upgrade first
 
     return app
