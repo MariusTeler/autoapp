@@ -2,81 +2,76 @@
 {% block title %}Configurare — Auto Service{% endblock %}
 
 {% block content %}
-<h2 class="mb-3">Configurare Aplicație</h2>
+<div class="page-header">
+  <h5 class="mb-0">Configurare Aplicație</h5>
+</div>
 
-<form method="post">
+<form method="post" class="form-compact" style="max-width:860px">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-  <!-- Date Societate -->
-  <div class="card mb-3">
-    <div class="card-header"><strong>Date Societate</strong></div>
-    <div class="card-body">
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label class="form-label">Denumire Societate</label>
-          <input type="text" class="form-control" name="firma_denumire" value="{{ settings.firma_denumire }}">
-        </div>
-        <div class="col-md-6">
-          <label class="form-label">Adresă</label>
-          <input type="text" class="form-control" name="firma_adresa" value="{{ settings.firma_adresa }}">
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">Localitate</label>
-          <input type="text" class="form-control" name="firma_localitate" value="{{ settings.firma_localitate }}">
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">Județ</label>
-          <input type="text" class="form-control" name="firma_judet" value="{{ settings.firma_judet }}">
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">CUI</label>
-          <input type="text" class="form-control" name="firma_cui" value="{{ settings.firma_cui }}">
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">Telefon</label>
-          <input type="text" class="form-control" name="firma_telefon" value="{{ settings.firma_telefon }}">
-        </div>
-      </div>
+  <div class="fs-section">Date Societate</div>
+  <div class="row g-2 mb-3">
+    <div class="col-md-6">
+      <label class="form-label">Denumire Societate</label>
+      <input type="text" class="form-control form-control-sm" name="firma_denumire"
+             value="{{ settings.firma_denumire }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Adresă</label>
+      <input type="text" class="form-control form-control-sm" name="firma_adresa"
+             value="{{ settings.firma_adresa }}">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Localitate</label>
+      <input type="text" class="form-control form-control-sm" name="firma_localitate"
+             value="{{ settings.firma_localitate }}">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Județ</label>
+      <input type="text" class="form-control form-control-sm" name="firma_judet"
+             value="{{ settings.firma_judet }}">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">CUI</label>
+      <input type="text" class="form-control form-control-sm" name="firma_cui"
+             value="{{ settings.firma_cui }}">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Telefon</label>
+      <input type="text" class="form-control form-control-sm" name="firma_telefon"
+             value="{{ settings.firma_telefon }}">
     </div>
   </div>
 
-  <!-- Configurare Avize -->
-  <div class="card mb-3">
-    <div class="card-header"><strong>Configurare Avize</strong></div>
-    <div class="card-body">
-      <div class="row g-3">
-        <div class="col-md-4">
-          <label class="form-label">Prefix Numerotare</label>
-          <input type="text" class="form-control" name="aviz_prefix"
-                 value="{{ settings.aviz_prefix or 'SRV' }}" placeholder="SRV">
-          <div class="form-text">Ex: SRV → SRV-2026-001</div>
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">TVA (%)</label>
-          <input type="number" class="form-control" name="aviz_tva"
-                 value="{{ settings.aviz_tva or '19' }}" min="0" max="100" step="1">
-        </div>
-      </div>
+  <div class="fs-section">Setări Avize</div>
+  <div class="row g-2 mb-3">
+    <div class="col-md-3">
+      <label class="form-label">Prefix numerotare</label>
+      <input type="text" class="form-control form-control-sm" name="aviz_prefix"
+             value="{{ settings.aviz_prefix or 'SRV' }}" placeholder="SRV">
+      <div class="form-text">Ex: SRV → SRV-2026-001</div>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">TVA (%)</label>
+      <input type="number" class="form-control form-control-sm" name="aviz_tva"
+             value="{{ settings.aviz_tva or '19' }}" min="0" max="100" step="1">
     </div>
   </div>
 
-  <!-- Footer Aviz -->
-  <div class="card mb-3">
-    <div class="card-header"><strong>Footer Aviz</strong></div>
-    <div class="card-body">
-      <div class="mb-3">
-        <label class="form-label">Titlu Footer</label>
-        <input type="text" class="form-control" name="footer_titlu"
-               value="{{ settings.footer_titlu }}" placeholder="Garanție și Condiții">
-      </div>
-      <div>
-        <label class="form-label">Text Footer</label>
-        <textarea class="form-control" name="footer_text" rows="4"
-                  placeholder="Garanție 90 zile la piesele montate...">{{ settings.footer_text }}</textarea>
-      </div>
+  <div class="fs-section">Footer Aviz (apare pe documentul tipărit)</div>
+  <div class="row g-2 mb-4">
+    <div class="col-md-6">
+      <label class="form-label">Titlu footer</label>
+      <input type="text" class="form-control form-control-sm" name="footer_titlu"
+             value="{{ settings.footer_titlu }}" placeholder="Garanție și Condiții">
+    </div>
+    <div class="col-12">
+      <label class="form-label">Text footer</label>
+      <textarea class="form-control form-control-sm" name="footer_text" rows="3"
+                placeholder="Garanție 90 zile la piesele montate...">{{ settings.footer_text }}</textarea>
     </div>
   </div>
 
-  <button type="submit" class="btn btn-primary btn-lg">Salvează Configurarea</button>
+  <button type="submit" class="btn btn-primary">Salvează Configurarea</button>
 </form>
 {% endblock %}

@@ -2,13 +2,10 @@
 {% block title %}Dashboard — Auto Service{% endblock %}
 
 {% block content %}
-<h2 class="mb-3">Dashboard</h2>
-
-<!-- Month/year filter -->
-<div class="row mb-3 align-items-end">
-  <div class="col-auto">
-    <label class="form-label">Lună</label>
-    <select name="luna" class="form-select"
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0">Dashboard</h5>
+  <div class="d-flex gap-2 align-items-center">
+    <select name="luna" class="form-select form-select-sm" style="width:auto"
             hx-get="{{ url_for('dashboard.stats') }}"
             hx-trigger="change"
             hx-target="#stats-cards"
@@ -17,10 +14,7 @@
       <option value="{{ i }}" {% if i == luna %}selected{% endif %}>{{ l }}</option>
       {% endfor %}
     </select>
-  </div>
-  <div class="col-auto">
-    <label class="form-label">An</label>
-    <select name="an" class="form-select"
+    <select name="an" class="form-select form-select-sm" style="width:auto"
             hx-get="{{ url_for('dashboard.stats') }}"
             hx-trigger="change"
             hx-target="#stats-cards"
@@ -32,65 +26,63 @@
   </div>
 </div>
 
-<!-- Stats cards -->
-<div class="row" id="stats-cards">
+<div class="row g-3 mb-4" id="stats-cards">
   {% include 'dashboard/_stats.html' %}
 </div>
 
-<!-- Recent avize -->
-<h5 class="mt-4">Avize Recente</h5>
+<div class="fs-section">Avize recente</div>
 <div class="table-responsive">
-  <table class="table table-bordered table-hover">
+  <table class="table table-sm table-hover table-app">
     <thead class="table-dark">
       <tr>
         <th>Nr. Aviz</th>
         <th>Dată</th>
         <th>Beneficiar</th>
         <th>Nr. Auto</th>
-        <th>Total (cu TVA)</th>
+        <th class="text-end">Total (cu TVA)</th>
         <th></th>
       </tr>
     </thead>
     <tbody>
       {% for aviz in avize_recente %}
       <tr>
-        <td>{{ aviz.numar_complet }}</td>
-        <td>{{ aviz.data_aviz.strftime('%d.%m.%Y') }}</td>
+        <td class="fw-semibold">{{ aviz.numar_complet }}</td>
+        <td class="text-nowrap">{{ aviz.data_aviz.strftime('%d.%m.%Y') }}</td>
         <td>{{ aviz.beneficiar_nume or '—' }}</td>
         <td>{{ aviz.auto_nr }}</td>
-        <td>{{ aviz.total_de_plata | format_ron }} Lei</td>
+        <td class="text-end text-nowrap">{{ aviz.total_de_plata | format_ron }} Lei</td>
         <td>
           <a href="{{ url_for('avize.detaliu', aviz_id=aviz.id) }}"
-             class="btn btn-sm btn-outline-primary">Vizualizare</a>
+             class="btn btn-sm btn-outline-primary py-0">Vizualizare</a>
         </td>
       </tr>
       {% endfor %}
       {% if not avize_recente %}
-      <tr><td colspan="6" class="text-center text-muted">Niciun aviz.</td></tr>
+      <tr><td colspan="6" class="text-center text-muted py-3">Niciun aviz în această perioadă.</td></tr>
       {% endif %}
     </tbody>
   </table>
 </div>
 
 {% if current_user.role == 'admin' %}
-<h5 class="mt-4">Statistici per Utilizator</h5>
+<div class="fs-section mt-4">Manoperă per utilizator — {{ luni[luna-1] }} {{ an }}</div>
 <div class="table-responsive">
-  <table class="table table-bordered">
+  <table class="table table-sm table-hover table-app">
     <thead class="table-dark">
       <tr>
         <th>Utilizator</th>
-        <th>Nr. Avize</th>
-        <th>Total Manoperă</th>
-        <th>Total Materiale</th>
+        <th class="text-center">Nr. Avize</th>
+        <th class="text-end">Total Manoperă</th>
+        <th class="text-end">Total Materiale</th>
       </tr>
     </thead>
     <tbody>
       {% for row in per_user %}
       <tr>
         <td>{{ row.user.full_name }}</td>
-        <td>{{ row.nr_avize }}</td>
-        <td>{{ row.total_servicii | format_ron }} Lei</td>
-        <td>{{ row.total_materiale | format_ron }} Lei</td>
+        <td class="text-center">{{ row.nr_avize }}</td>
+        <td class="text-end text-nowrap">{{ row.total_servicii | format_ron }} Lei</td>
+        <td class="text-end text-nowrap">{{ row.total_materiale | format_ron }} Lei</td>
       </tr>
       {% endfor %}
     </tbody>

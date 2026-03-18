@@ -1,317 +1,280 @@
 {% extends 'base.html' %}
-{% block title %}{% if aviz %}Editare Aviz{% else %}Aviz Nou{% endif %} — Auto Service{% endblock %}
+{% block title %}{% if aviz %}Editează {{ aviz.numar_complet }}{% else %}Aviz Nou{% endif %} — Auto Service{% endblock %}
 
 {% block content %}
-<h2>{% if aviz %}Editare {{ aviz.numar_complet }}{% else %}Aviz Nou{% endif %}</h2>
-
-<!-- Firm header (read-only) -->
-{% if settings.firma_denumire %}
-<div class="alert alert-light border text-center mb-3">
-  <strong>{{ settings.firma_denumire }}</strong><br>
-  {{ settings.firma_adresa }}, {{ settings.firma_localitate }}, {{ settings.firma_judet }}<br>
-  CUI: {{ settings.firma_cui }} | Tel: {{ settings.firma_telefon }}
+<div class="page-header">
+  <div>
+    <h5 class="mb-0">{% if aviz %}Editează <strong>{{ aviz.numar_complet }}</strong>{% else %}Aviz Nou{% endif %}</h5>
+    <div class="page-header-sub">
+      {% if aviz %}{{ aviz.data_aviz.strftime('%d.%m.%Y') }}
+      {% else %}Număr se generează la salvare &nbsp;·&nbsp; {{ today }}{% endif %}
+      {% if settings.firma_denumire %}&nbsp;·&nbsp; {{ settings.firma_denumire }}{% endif %}
+    </div>
+  </div>
+  <a href="{{ url_for('avize.lista') }}" class="btn btn-sm btn-outline-secondary">← Listă avize</a>
 </div>
-{% endif %}
 
-<p class="text-muted">
-  <strong>Deviz Final / Comanda Service</strong>
-  {% if aviz %}Nr. {{ aviz.numar_complet }} din {{ aviz.data_aviz.strftime('%d.%m.%Y') }}
-  {% else %}— număr se generează la salvare ({{ today }})
-  {% endif %}
-</p>
-
-<form method="post">
+<form method="post" class="form-compact">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <input type="hidden" id="tva-pct" value="{{ settings.aviz_tva }}">
 
-  <!-- Beneficiar -->
-  <div class="card mb-3">
-    <div class="card-header"><strong>Date Beneficiar</strong></div>
-    <div class="card-body">
-      <div class="row g-2">
-        <div class="col-md-6">
-          <label class="form-label">Beneficiar</label>
-          <input type="text" class="form-control" name="beneficiar_nume" id="beneficiar_nume"
-                 value="{{ aviz.beneficiar_nume or '' if aviz else '' }}">
-        </div>
-        <div class="col-md-3">
-          <label class="form-label">CIF</label>
-          <input type="text" class="form-control" name="beneficiar_cif"
-                 value="{{ aviz.beneficiar_cif or '' if aviz else '' }}">
-        </div>
-        <div class="col-md-3">
-          <label class="form-label">Telefon</label>
-          <input type="text" class="form-control" name="beneficiar_telefon"
-                 value="{{ aviz.beneficiar_telefon or '' if aviz else '' }}">
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">Email</label>
-          <input type="email" class="form-control" name="beneficiar_email"
-                 value="{{ aviz.beneficiar_email or '' if aviz else '' }}">
-        </div>
-      </div>
+  {# ── CLIENT & VEHICUL ── #}
+  <div class="fs-section">Client &amp; Vehicul</div>
+  <div class="row g-2 mb-1">
+    <div class="col-md-4">
+      <label class="form-label">Beneficiar</label>
+      <input type="text" class="form-control form-control-sm" name="beneficiar_nume" id="beneficiar_nume"
+             value="{{ aviz.beneficiar_nume or '' if aviz else '' }}">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">CIF</label>
+      <input type="text" class="form-control form-control-sm" name="beneficiar_cif"
+             value="{{ aviz.beneficiar_cif or '' if aviz else '' }}">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Telefon</label>
+      <input type="text" class="form-control form-control-sm" name="beneficiar_telefon"
+             value="{{ aviz.beneficiar_telefon or '' if aviz else '' }}">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-control form-control-sm" name="beneficiar_email"
+             value="{{ aviz.beneficiar_email or '' if aviz else '' }}">
+    </div>
+
+    <div class="col-12"><hr class="my-1 opacity-25"></div>
+
+    <div class="col-md-2">
+      <label class="form-label">Nr. Auto <span class="text-danger">*</span></label>
+      <input type="text" class="form-control form-control-sm" name="auto_nr" required
+             value="{{ aviz.auto_nr if aviz else '' }}">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Marcă <span class="text-danger">*</span></label>
+      <input type="text" class="form-control form-control-sm" name="auto_marca" required
+             value="{{ aviz.auto_marca if aviz else '' }}">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Model <span class="text-danger">*</span></label>
+      <input type="text" class="form-control form-control-sm" name="auto_model" required
+             value="{{ aviz.auto_model if aviz else '' }}">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">An fabricație</label>
+      <input type="number" class="form-control form-control-sm" name="auto_an_fabricatie" min="1900" max="2099"
+             value="{{ aviz.auto_an_fabricatie or '' if aviz else '' }}">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Km</label>
+      <input type="number" class="form-control form-control-sm" name="auto_km" min="0"
+             value="{{ aviz.auto_km or '' if aviz else '' }}">
+    </div>
+
+    <div class="col-md-5">
+      <label class="form-label">Serie Șasiu</label>
+      <input type="text" class="form-control form-control-sm" name="auto_serie_sasiu"
+             value="{{ aviz.auto_serie_sasiu or '' if aviz else '' }}">
+    </div>
+    <div class="col-md-5">
+      <label class="form-label">Serie Motor</label>
+      <input type="text" class="form-control form-control-sm" name="auto_serie_motor"
+             value="{{ aviz.auto_serie_motor or '' if aviz else '' }}">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Motorizare</label>
+      <input type="text" class="form-control form-control-sm" name="auto_motorizare"
+             value="{{ aviz.auto_motorizare or '' if aviz else '' }}">
     </div>
   </div>
 
-  <!-- Autovehicul -->
-  <div class="card mb-3">
-    <div class="card-header"><strong>Date Autovehicul</strong></div>
-    <div class="card-body">
-      <div class="row g-2">
-        <div class="col-md-2">
-          <label class="form-label">Nr. Auto *</label>
-          <input type="text" class="form-control" name="auto_nr" required
-                 value="{{ aviz.auto_nr if aviz else '' }}">
-        </div>
-        <div class="col-md-3">
-          <label class="form-label">Marcă *</label>
-          <input type="text" class="form-control" name="auto_marca" required
-                 value="{{ aviz.auto_marca if aviz else '' }}">
-        </div>
-        <div class="col-md-3">
-          <label class="form-label">Model *</label>
-          <input type="text" class="form-control" name="auto_model" required
-                 value="{{ aviz.auto_model if aviz else '' }}">
-        </div>
-        <div class="col-md-2">
-          <label class="form-label">An Fabricație</label>
-          <input type="number" class="form-control" name="auto_an_fabricatie" min="1900" max="2099"
-                 value="{{ aviz.auto_an_fabricatie or '' if aviz else '' }}">
-        </div>
-        <div class="col-md-2">
-          <label class="form-label">Km</label>
-          <input type="number" class="form-control" name="auto_km" min="0"
-                 value="{{ aviz.auto_km or '' if aviz else '' }}">
-        </div>
-        <div class="col-md-3">
-          <label class="form-label">Serie Șasiu</label>
-          <input type="text" class="form-control" name="auto_serie_sasiu"
-                 value="{{ aviz.auto_serie_sasiu or '' if aviz else '' }}">
-        </div>
-        <div class="col-md-3">
-          <label class="form-label">Serie Motor</label>
-          <input type="text" class="form-control" name="auto_serie_motor"
-                 value="{{ aviz.auto_serie_motor or '' if aviz else '' }}">
-        </div>
-        <div class="col-md-3">
-          <label class="form-label">Motorizare</label>
-          <input type="text" class="form-control" name="auto_motorizare"
-                 value="{{ aviz.auto_motorizare or '' if aviz else '' }}">
-        </div>
-      </div>
+  {# ── DEFECTE ── #}
+  <div class="fs-section mt-3">Defecte</div>
+  <div class="row g-2 mb-1">
+    <div class="col-md-6">
+      <label class="form-label">Defect reclamat de client</label>
+      <textarea class="form-control form-control-sm" name="defect_reclamat" rows="2"
+                placeholder="Descrieți defectul reclamat...">{{ aviz.defect_reclamat or '' if aviz else '' }}</textarea>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Defecte constatate în timpul reparației</label>
+      <textarea class="form-control form-control-sm" name="defecte_constatate" rows="2"
+                placeholder="Descrieți defectele constatate...">{{ aviz.defecte_constatate or '' if aviz else '' }}</textarea>
     </div>
   </div>
 
-  <!-- Defecte -->
-  <div class="card mb-3">
-    <div class="card-header"><strong>Defecte</strong></div>
-    <div class="card-body">
-      <div class="mb-2">
-        <label class="form-label">Defect reclamat de client</label>
-        <textarea class="form-control" name="defect_reclamat" rows="3"
-                  placeholder="Descrieți defectul reclamat de client...">{{ aviz.defect_reclamat or '' if aviz else '' }}</textarea>
-      </div>
-      <div>
-        <label class="form-label">Defecte constatate în timpul reparației</label>
-        <textarea class="form-control" name="defecte_constatate" rows="3"
-                  placeholder="Descrieți defectele constatate...">{{ aviz.defecte_constatate or '' if aviz else '' }}</textarea>
-      </div>
-    </div>
+  {# ── MATERIALE ── #}
+  <div class="fs-section with-action mt-3">
+    <span>Materiale / Piese</span>
+    <button type="button" class="btn btn-sm btn-success py-0 px-2" onclick="addRow('tabel-materiale')">+ Adaugă</button>
+  </div>
+  <div class="table-responsive mb-1">
+    <table class="table table-sm table-hover table-form mb-0" id="tabel-materiale">
+      <thead class="table-light">
+        <tr>
+          <th style="width:32px">#</th>
+          <th>Denumire Piesă/Material</th>
+          <th style="width:58px">U/M</th>
+          <th style="width:88px">Cantitate</th>
+          <th style="width:98px">Preț/buc</th>
+          <th style="width:98px" class="text-end">Valoare</th>
+          <th style="width:32px"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if aviz and aviz.materiale %}
+        {% for m in aviz.materiale %}
+        <tr>
+          <td class="text-center text-muted small">{{ loop.index }}
+            <input type="hidden" name="materiale[{{ loop.index0 }}][position]" value="{{ loop.index }}">
+          </td>
+          <td><input type="text" class="form-control form-control-sm"
+                     name="materiale[{{ loop.index0 }}][denumire]" value="{{ m.denumire }}"></td>
+          <td><input type="text" class="form-control form-control-sm"
+                     name="materiale[{{ loop.index0 }}][um]" value="{{ m.um }}"></td>
+          <td><input type="number" class="form-control form-control-sm calc-input"
+                     name="materiale[{{ loop.index0 }}][cantitate]" step="0.01" min="0" value="{{ m.cantitate }}"></td>
+          <td><input type="number" class="form-control form-control-sm calc-input"
+                     name="materiale[{{ loop.index0 }}][pret_unitar]" step="0.01" min="0" value="{{ m.pret_unitar }}"></td>
+          <td class="text-end">
+            <span class="row-valoare small">{{ m.valoare | format_ron }}</span>
+            <input type="hidden" name="materiale[{{ loop.index0 }}][valoare]" value="{{ m.valoare }}">
+          </td>
+          <td class="text-center">
+            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1 lh-1" onclick="removeRow(this)">✕</button>
+          </td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+          <td class="text-center text-muted small">1<input type="hidden" name="materiale[0][position]" value="1"></td>
+          <td><input type="text" class="form-control form-control-sm" name="materiale[0][denumire]"></td>
+          <td><input type="text" class="form-control form-control-sm" name="materiale[0][um]"></td>
+          <td><input type="number" class="form-control form-control-sm calc-input" name="materiale[0][cantitate]" step="0.01" min="0" value="0"></td>
+          <td><input type="number" class="form-control form-control-sm calc-input" name="materiale[0][pret_unitar]" step="0.01" min="0" value="0"></td>
+          <td class="text-end">
+            <span class="row-valoare small">0,00</span>
+            <input type="hidden" name="materiale[0][valoare]" value="0">
+          </td>
+          <td class="text-center">
+            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1 lh-1" onclick="removeRow(this)">✕</button>
+          </td>
+        </tr>
+        {% endif %}
+      </tbody>
+      <tfoot>
+        <tr class="table-secondary">
+          <td colspan="5" class="text-end small fw-semibold py-1">Total Materiale:</td>
+          <td class="text-end small fw-semibold py-1" id="footer-total-materiale">0,00 Lei</td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
   </div>
 
-  <!-- Materiale -->
-  <div class="card mb-3">
-    <div class="card-header"><strong>Materiale / Piese</strong></div>
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-bordered mb-0" id="tabel-materiale">
-          <thead class="table-secondary">
-            <tr>
-              <th style="width:40px">#</th>
-              <th>Denumire Piesă/Material</th>
-              <th style="width:70px">U/M</th>
-              <th style="width:90px">Cantitate</th>
-              <th style="width:110px">Preț/buc (fără TVA)</th>
-              <th style="width:120px">Valoare (fără TVA)</th>
-              <th style="width:40px"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% if aviz and aviz.materiale %}
-              {% for m in aviz.materiale %}
-              <tr>
-                <td class="text-center">{{ loop.index }}
-                  <input type="hidden" name="materiale[{{ loop.index0 }}][position]" value="{{ loop.index }}">
-                </td>
-                <td><input type="text" class="form-control form-control-sm"
-                           name="materiale[{{ loop.index0 }}][denumire]" value="{{ m.denumire }}"></td>
-                <td><input type="text" class="form-control form-control-sm"
-                           name="materiale[{{ loop.index0 }}][um]" value="{{ m.um }}" style="width:60px"></td>
-                <td><input type="number" class="form-control form-control-sm calc-input"
-                           name="materiale[{{ loop.index0 }}][cantitate]" step="0.01" min="0" value="{{ m.cantitate }}"></td>
-                <td><input type="number" class="form-control form-control-sm calc-input"
-                           name="materiale[{{ loop.index0 }}][pret_unitar]" step="0.01" min="0" value="{{ m.pret_unitar }}"></td>
-                <td class="text-end">
-                  <span class="row-valoare">{{ m.valoare | format_ron }}</span>
-                  <input type="hidden" name="materiale[{{ loop.index0 }}][valoare]" value="{{ m.valoare }}">
-                </td>
-                <td class="text-center">
-                  <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this)">✕</button>
-                </td>
-              </tr>
-              {% endfor %}
-            {% else %}
-              <tr>
-                <td class="text-center">1<input type="hidden" name="materiale[0][position]" value="1"></td>
-                <td><input type="text" class="form-control form-control-sm" name="materiale[0][denumire]"></td>
-                <td><input type="text" class="form-control form-control-sm" name="materiale[0][um]" style="width:60px"></td>
-                <td><input type="number" class="form-control form-control-sm calc-input" name="materiale[0][cantitate]" step="0.01" min="0" value="0"></td>
-                <td><input type="number" class="form-control form-control-sm calc-input" name="materiale[0][pret_unitar]" step="0.01" min="0" value="0"></td>
-                <td class="text-end">
-                  <span class="row-valoare">0,00</span>
-                  <input type="hidden" name="materiale[0][valoare]" value="0">
-                </td>
-                <td class="text-center">
-                  <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this)">✕</button>
-                </td>
-              </tr>
-            {% endif %}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="5" class="text-end fw-bold">Total Materiale:</td>
-              <td class="text-end fw-bold" id="footer-total-materiale">— Lei</td>
-              <td></td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-      <div class="p-2">
-        <button type="button" class="btn btn-sm btn-outline-success"
-                onclick="addRow('tabel-materiale')">+ Adaugă material</button>
-      </div>
-    </div>
+  {# ── SERVICII ── #}
+  <div class="fs-section with-action mt-3">
+    <span>Manoperă / Servicii</span>
+    <button type="button" class="btn btn-sm btn-success py-0 px-2" onclick="addRow('tabel-servicii')">+ Adaugă</button>
+  </div>
+  <div class="table-responsive mb-1">
+    <table class="table table-sm table-hover table-form mb-0" id="tabel-servicii">
+      <thead class="table-light">
+        <tr>
+          <th style="width:32px">#</th>
+          <th>Denumire Serviciu/Manoperă</th>
+          <th style="width:58px">U/M</th>
+          <th style="width:88px">Cantitate</th>
+          <th style="width:98px">Preț</th>
+          <th style="width:98px" class="text-end">Valoare</th>
+          <th style="width:32px"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if aviz and aviz.servicii %}
+        {% for s in aviz.servicii %}
+        <tr>
+          <td class="text-center text-muted small">{{ loop.index }}
+            <input type="hidden" name="servicii[{{ loop.index0 }}][position]" value="{{ loop.index }}">
+          </td>
+          <td><input type="text" class="form-control form-control-sm"
+                     name="servicii[{{ loop.index0 }}][denumire]" value="{{ s.denumire }}"></td>
+          <td><input type="text" class="form-control form-control-sm"
+                     name="servicii[{{ loop.index0 }}][um]" value="{{ s.um }}"></td>
+          <td><input type="number" class="form-control form-control-sm calc-input"
+                     name="servicii[{{ loop.index0 }}][cantitate]" step="0.01" min="0" value="{{ s.cantitate }}"></td>
+          <td><input type="number" class="form-control form-control-sm calc-input"
+                     name="servicii[{{ loop.index0 }}][pret_unitar]" step="0.01" min="0" value="{{ s.pret_unitar }}"></td>
+          <td class="text-end">
+            <span class="row-valoare small">{{ s.valoare | format_ron }}</span>
+            <input type="hidden" name="servicii[{{ loop.index0 }}][valoare]" value="{{ s.valoare }}">
+          </td>
+          <td class="text-center">
+            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1 lh-1" onclick="removeRow(this)">✕</button>
+          </td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+          <td class="text-center text-muted small">1<input type="hidden" name="servicii[0][position]" value="1"></td>
+          <td><input type="text" class="form-control form-control-sm" name="servicii[0][denumire]"></td>
+          <td><input type="text" class="form-control form-control-sm" name="servicii[0][um]"></td>
+          <td><input type="number" class="form-control form-control-sm calc-input" name="servicii[0][cantitate]" step="0.01" min="0" value="0"></td>
+          <td><input type="number" class="form-control form-control-sm calc-input" name="servicii[0][pret_unitar]" step="0.01" min="0" value="0"></td>
+          <td class="text-end">
+            <span class="row-valoare small">0,00</span>
+            <input type="hidden" name="servicii[0][valoare]" value="0">
+          </td>
+          <td class="text-center">
+            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1 lh-1" onclick="removeRow(this)">✕</button>
+          </td>
+        </tr>
+        {% endif %}
+      </tbody>
+      <tfoot>
+        <tr class="table-secondary">
+          <td colspan="5" class="text-end small fw-semibold py-1">Total Manoperă:</td>
+          <td class="text-end small fw-semibold py-1" id="footer-total-servicii">0,00 Lei</td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
   </div>
 
-  <!-- Servicii -->
-  <div class="card mb-3">
-    <div class="card-header"><strong>Servicii Prestate (Manoperă)</strong></div>
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-bordered mb-0" id="tabel-servicii">
-          <thead class="table-secondary">
-            <tr>
-              <th style="width:40px">#</th>
-              <th>Denumire Serviciu</th>
-              <th style="width:70px">U/M</th>
-              <th style="width:90px">Cantitate</th>
-              <th style="width:110px">Preț (fără TVA)</th>
-              <th style="width:120px">Valoare (fără TVA)</th>
-              <th style="width:40px"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% if aviz and aviz.servicii %}
-              {% for s in aviz.servicii %}
-              <tr>
-                <td class="text-center">{{ loop.index }}
-                  <input type="hidden" name="servicii[{{ loop.index0 }}][position]" value="{{ loop.index }}">
-                </td>
-                <td><input type="text" class="form-control form-control-sm"
-                           name="servicii[{{ loop.index0 }}][denumire]" value="{{ s.denumire }}"></td>
-                <td><input type="text" class="form-control form-control-sm"
-                           name="servicii[{{ loop.index0 }}][um]" value="{{ s.um }}" style="width:60px"></td>
-                <td><input type="number" class="form-control form-control-sm calc-input"
-                           name="servicii[{{ loop.index0 }}][cantitate]" step="0.01" min="0" value="{{ s.cantitate }}"></td>
-                <td><input type="number" class="form-control form-control-sm calc-input"
-                           name="servicii[{{ loop.index0 }}][pret_unitar]" step="0.01" min="0" value="{{ s.pret_unitar }}"></td>
-                <td class="text-end">
-                  <span class="row-valoare">{{ s.valoare | format_ron }}</span>
-                  <input type="hidden" name="servicii[{{ loop.index0 }}][valoare]" value="{{ s.valoare }}">
-                </td>
-                <td class="text-center">
-                  <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this)">✕</button>
-                </td>
-              </tr>
-              {% endfor %}
-            {% else %}
-              <tr>
-                <td class="text-center">1<input type="hidden" name="servicii[0][position]" value="1"></td>
-                <td><input type="text" class="form-control form-control-sm" name="servicii[0][denumire]"></td>
-                <td><input type="text" class="form-control form-control-sm" name="servicii[0][um]" style="width:60px"></td>
-                <td><input type="number" class="form-control form-control-sm calc-input" name="servicii[0][cantitate]" step="0.01" min="0" value="0"></td>
-                <td><input type="number" class="form-control form-control-sm calc-input" name="servicii[0][pret_unitar]" step="0.01" min="0" value="0"></td>
-                <td class="text-end">
-                  <span class="row-valoare">0,00</span>
-                  <input type="hidden" name="servicii[0][valoare]" value="0">
-                </td>
-                <td class="text-center">
-                  <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this)">✕</button>
-                </td>
-              </tr>
-            {% endif %}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="5" class="text-end fw-bold">Total Manoperă:</td>
-              <td class="text-end fw-bold" id="footer-total-servicii">— Lei</td>
-              <td></td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-      <div class="p-2">
-        <button type="button" class="btn btn-sm btn-outline-success"
-                onclick="addRow('tabel-servicii')">+ Adaugă serviciu</button>
-      </div>
-    </div>
+  {# ── TOTALURI ── #}
+  <div class="d-flex justify-content-end mt-3 mb-3">
+    <table class="table table-sm table-borderless totals-box">
+      <tr>
+        <td class="text-muted">Total Materiale (fără TVA)</td>
+        <td class="text-end" id="total-materiale-display">0,00 Lei</td>
+      </tr>
+      <tr>
+        <td class="text-muted">Total Manoperă (fără TVA)</td>
+        <td class="text-end" id="total-servicii-display">0,00 Lei</td>
+      </tr>
+      <tr>
+        <td class="text-muted">Total General (fără TVA)</td>
+        <td class="text-end" id="total-general-display">0,00 Lei</td>
+      </tr>
+      <tr>
+        <td class="text-muted">TVA {{ settings.aviz_tva }}%</td>
+        <td class="text-end" id="total-tva-display">0,00 Lei</td>
+      </tr>
+      <tr class="total-row">
+        <td><strong>TOTAL DE PLATĂ</strong></td>
+        <td class="text-end text-primary fw-bold fs-5" id="total-plata-display">0,00 Lei</td>
+      </tr>
+    </table>
   </div>
 
-  <!-- Totaluri -->
-  <div class="card mb-3">
-    <div class="card-header"><strong>Totaluri</strong></div>
-    <div class="card-body">
-      <table class="table table-sm w-auto ms-auto">
-        <tr><td>Total Materiale (fără TVA):</td><td class="text-end fw-bold" id="total-materiale-display">0,00 Lei</td></tr>
-        <tr><td>Total Manoperă (fără TVA):</td><td class="text-end fw-bold" id="total-servicii-display">0,00 Lei</td></tr>
-        <tr><td>Total General (fără TVA):</td><td class="text-end fw-bold" id="total-general-display">0,00 Lei</td></tr>
-        <tr><td>TVA {{ settings.aviz_tva }}%:</td><td class="text-end fw-bold" id="total-tva-display">0,00 Lei</td></tr>
-        <tr class="table-dark"><td><strong>TOTAL DE PLATĂ:</strong></td><td class="text-end"><strong id="total-plata-display">0,00 Lei</strong></td></tr>
-      </table>
-    </div>
-  </div>
-
-  <!-- Semnături -->
-  <div class="row mb-4">
-    <div class="col-6 text-center">
-      <p><strong>Beneficiar</strong></p>
-      <p id="beneficiar-display">{{ aviz.beneficiar_nume or '' if aviz else '' }}</p>
-      <div class="signature-line"></div>
-      <small class="text-muted">Semnătură</small>
-    </div>
-    <div class="col-6 text-center">
-      <p><strong>Executant</strong></p>
-      <p>{{ current_user.full_name }}</p>
-      <div class="signature-line"></div>
-      <small class="text-muted">Semnătură</small>
-    </div>
-  </div>
-
-  <div class="d-flex gap-2 mb-4">
+  <div class="d-flex gap-2 mb-5">
     <button type="submit" class="btn btn-primary">
       {% if aviz %}Salvează Modificările{% else %}Crează Aviz{% endif %}
     </button>
-    <a href="{{ url_for('avize.lista') }}" class="btn btn-secondary">Anulează</a>
+    <a href="{{ url_for('avize.lista') }}" class="btn btn-outline-secondary">Anulează</a>
   </div>
 </form>
 {% endblock %}
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/aviz.js') }}"></script>
-<script>
-  // Live update beneficiar display in signature section
-  document.getElementById('beneficiar_nume')?.addEventListener('input', function() {
-    document.getElementById('beneficiar-display').textContent = this.value;
-  });
-</script>
 {% endblock %}

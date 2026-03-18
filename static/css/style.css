@@ -1,3 +1,67 @@
+/* ══════════════════════════════════════════════════════
+   App-wide compact UI utilities
+   ══════════════════════════════════════════════════════ */
+
+/* Page header bar */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #dee2e6;
+}
+.page-header-sub {
+  font-size: 0.78rem;
+  color: #6c757d;
+  margin-top: 2px;
+}
+
+/* Form section separators */
+.fs-section {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #6c757d;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 10px;
+}
+.fs-section.with-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Compact form labels */
+.form-compact .form-label {
+  font-size: 0.74rem;
+  margin-bottom: 2px;
+  color: #495057;
+  font-weight: 500;
+}
+
+/* Compact table (for materiale/servicii in form) */
+.table-form td { vertical-align: middle; padding: 3px 5px; }
+.table-form th { padding: 5px 6px; font-size: 0.77rem; font-weight: 600; }
+.table-form input[type="number"] { text-align: right; }
+
+/* Totals summary box */
+.totals-box td { padding: 3px 8px; font-size: 0.875rem; }
+.totals-box tr.total-row td { font-size: 1rem; border-top: 2px solid #212529; }
+
+/* Stats card hover */
+.stat-card { transition: box-shadow 0.15s ease; }
+.stat-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,.18); }
+
+/* Table compact font */
+.table-app { font-size: 0.875rem; }
+
+/* ══════════════════════════════════════════════════════
+   Print styles
+   ══════════════════════════════════════════════════════ */
+
 /* ── Print styles ── */
 @media print {
   @page { size: A4 portrait; margin: 15mm; }
