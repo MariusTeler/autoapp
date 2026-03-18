@@ -103,6 +103,11 @@
   .print-header { text-align: center; margin-bottom: 4px; }
   .print-title  { font-size: 11pt; font-weight: bold; text-align: center; margin: 5px 0; }
 
+  /* Force Bootstrap grid to work in print */
+  .row { display: flex !important; flex-wrap: wrap !important; margin: 0 !important; }
+  .col-6  { flex: 0 0 auto !important; width: 50% !important; padding: 0 4px !important; }
+  .col-md-6 { flex: 0 0 auto !important; width: 50% !important; padding: 0 4px !important; }
+
   /* Tables */
   table { width: 100%; border-collapse: collapse; }
   th, td { border: 1px solid #555; padding: 2px 4px; font-size: 9pt; }
