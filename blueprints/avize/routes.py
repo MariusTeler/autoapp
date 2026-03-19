@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from sqlalchemy.exc import IntegrityError
 
 from blueprints.avize import avize_bp
-from models import db, Aviz, AvizMaterial, AvizServiciu, get_setting
+from models import db, Aviz, AvizMaterial, AvizServiciu, User, get_setting
 
 
 def _check_ownership(aviz):
@@ -74,6 +74,7 @@ def lista():
     data_pana_la = request.args.get('data_pana_la', '').strip()
     beneficiar = request.args.get('beneficiar', '').strip()
     auto_nr = request.args.get('auto_nr', '').strip()
+    user_id = request.args.get('user_id', '').strip()
 
     if nr:
         query = query.filter(Aviz.numar_complet.ilike(f'%{nr}%'))
@@ -91,11 +92,14 @@ def lista():
         query = query.filter(Aviz.beneficiar_nume.ilike(f'%{beneficiar}%'))
     if auto_nr:
         query = query.filter(Aviz.auto_nr.ilike(f'%{auto_nr}%'))
+    if user_id and current_user.role == 'admin':
+        query = query.filter(Aviz.user_id == int(user_id))
 
+    users = User.query.filter_by(active=True).order_by(User.full_name).all() if current_user.role == 'admin' else []
     avize = query.order_by(Aviz.data_aviz.desc(), Aviz.numar_secvential.desc()).all()
     return render_template('avize/lista.html', avize=avize,
                            nr=nr, data_de_la=data_de_la, data_pana_la=data_pana_la,
-                           beneficiar=beneficiar, auto_nr=auto_nr)
+                           beneficiar=beneficiar, auto_nr=auto_nr, user_id=user_id, users=users)
 
 
 @avize_bp.route('/nou', methods=['GET', 'POST'])

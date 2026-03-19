@@ -23,9 +23,19 @@
   <div class="col-md-2">
     <input type="text" class="form-control form-control-sm" name="auto_nr" placeholder="Nr. auto" value="{{ auto_nr }}">
   </div>
+  {% if current_user.role == 'admin' %}
+  <div class="col-md-2">
+    <select class="form-select form-select-sm" name="user_id">
+      <option value="">Toți userii</option>
+      {% for u in users %}
+      <option value="{{ u.id }}" {% if u.id|string == user_id %}selected{% endif %}>{{ u.full_name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  {% endif %}
   <div class="col-auto">
     <button type="submit" class="btn btn-sm btn-primary">Filtrează</button>
-    {% if nr or data_de_la or data_pana_la or beneficiar or auto_nr %}
+    {% if nr or data_de_la or data_pana_la or beneficiar or auto_nr or user_id %}
     <a href="{{ url_for('avize.lista') }}" class="btn btn-sm btn-outline-secondary">✕</a>
     {% endif %}
   </div>
