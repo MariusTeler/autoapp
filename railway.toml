@@ -2,5 +2,5 @@
 builder = "nixpacks"
 
 [deploy]
-releaseCommand = "flask db upgrade"
+releaseCommand = "flask --app wsgi db upgrade"
 startCommand = "gunicorn wsgi:app"
